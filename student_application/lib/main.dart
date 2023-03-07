@@ -1,122 +1,82 @@
-import 'package:flutter/material.dart';
+// Source:https://api.flutter.dev/flutter/material/BottomNavigationBar-class.html
 
-void main() {
-  runApp(const MyApp());
-}
+import 'package:flutter/material.dart';
+import 'package:flutter/src/material/colors.dart';
+
+import 'screens/project-screen.dart';
+import 'screens/project-entry-screen.dart';
+import 'screens/project-email-screen.dart';
+import 'screens/access-screen.dart';
+
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
-  // This widget is the root of your application.
+  static const String _title = 'Flutter Code Sample';
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Citizen Science Application for Kids',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Citizen Science Application for Kids'),
+    return const MaterialApp(
+      title: _title,
+      home: ProjectNavigationScaffold(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class ProjectNavigationScaffold extends StatefulWidget {
+  const ProjectNavigationScaffold({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ProjectNavigationScaffold> createState() => _ProjectNavigationScaffoldState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  String _content = '';
-  final myController = TextEditingController();
+class _ProjectNavigationScaffoldState extends State<ProjectNavigationScaffold> {
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static List<String> _titleOptions = ['Project Description', 'Collect Data', 'Email a Question'];
+  static List<Widget> _widgetOptions = <Widget>[
+    ProjectScreen(),
+    ProjectEntryScreen(),
+    ProjectEmailScreen()
+  ];
 
-  @override
-  void initState() {
-    super.initState();
-    // Start listening to changes.
-    myController.addListener(_handleChange);
-  }
-
-  void _handleChange() {
+  void _onItemTapped(int index) {
     setState(() {
-      _content = myController.text;
+      _selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text( _titleOptions.elementAt(_selectedIndex)),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Enter Access Code:',
-            ),
-            Text(
-              _content,
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            TextField(
-              //  controller: myController,
-               onChanged: (String value){
-                 setState(() {
-                   _content = value;
-                 });
-               },
-               autofocus: true,
-            ),
-          ],
-        ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.blue,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+              ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_location_alt_rounded),
+            label: 'Data',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.email),
+            label: 'Email',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.white,
+        onTap: _onItemTapped,
+      ),
     );
   }
 }
