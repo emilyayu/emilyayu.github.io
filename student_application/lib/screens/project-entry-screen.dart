@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 
 // Create a Form widget.
 class ProjectEntryScreen extends StatefulWidget {
+  static const routeName = '/entry';
+  
   const ProjectEntryScreen({super.key});
 
   @override

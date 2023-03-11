@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 class AccessScreen extends StatefulWidget {
   const AccessScreen({super.key});
+  static const routeName = '/access';
 
   @override
   State<AccessScreen> createState() => _AccessScreenState();
@@ -78,7 +79,7 @@ class _AccessScreenState extends State<AccessScreen> {
                                 flex: 1,
                                 child: Container(),
                               ),
-                              ElevatedButton(onPressed: () => {}, child: Text('Submit'))
+                              ElevatedButton(onPressed: () => {Navigator.pushNamed(context, '/tab')}, child: Text('Submit'))
                             ],
                           ),
                         )

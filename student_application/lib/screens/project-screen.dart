@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../models/project.dart';
 
 class ProjectScreen extends StatelessWidget {
+  static const routeName = '/project';
+
   String ProjectName = "Mapping the blackberry";
   String ProjectType = "Image and Geolocation";
   String ProjectDescription = "An invasive species is an organism that is not "
