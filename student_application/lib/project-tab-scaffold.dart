@@ -26,17 +26,9 @@ class _ProjectNavigationScaffoldState extends State<ProjectNavigationScaffold> {
 
   static List<String> _titleOptions = [
     'Project Description',
-    'Collect Data',
-    'Email a Question'
+    'Collect Data'
   ];
 
-  static List<Widget> _widgetOptions = <Widget>[
-    // ProjectScreen(project: _project),
-    // ProjectEntryScreen(widget.students),
-    ProjectEmailScreen(),
-    ProjectEmailScreen(),
-    ProjectEmailScreen()
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -47,48 +39,33 @@ class _ProjectNavigationScaffoldState extends State<ProjectNavigationScaffold> {
   @override
   Widget build(BuildContext context) {
     final accessCode = ModalRoute.of(context)!.settings.arguments;
-
+    print(accessCode);
     return Scaffold(
       appBar: AppBar(
         title: Text(_titleOptions.elementAt(_selectedIndex)),
       ),
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-        // child: FutureBuilder<List<Widget>>(
-        //   future: getScreenList(accessCode),
-        //   builder:
-        //       (BuildContext context, AsyncSnapshot<List<Widget>> snapshot) {
-        //     List<Widget> children;
-        //     if (snapshot.hasData) {
-        //       children = const <Widget>[
-        //         Padding(
-        //           padding: EdgeInsets.only(top: 16),
-        //           child: Text('HAS DATA')
-        //         ),
-        //       ];
-              
-        //     } else if (snapshot.hasError) {
-        //       children = const <Widget>[
-        //         Padding(
-        //           padding: EdgeInsets.only(top: 16),
-        //           child: Text('ERROR'),
-        //         ),
-        //       ];
-        //     } else {
-        //       children = const <Widget>[
-        //         SizedBox(
-        //           width: 60,
-        //           height: 60,
-        //           child: CircularProgressIndicator(),
-        //         ),
-        //         Padding(
-        //           padding: EdgeInsets.only(top: 16),
-        //           child: Text('Awaiting result...'),
-        //         ),
-        //       ];
-        //     }
-        //   },
-        // ),
+        // child: _widgetOptions.elementAt(_selectedIndex),
+        child: FutureBuilder<List<Widget>>(
+          future: getScreenList(accessCode),
+          builder:
+              (BuildContext context, AsyncSnapshot<List<Widget>> snapshot) {
+            // WHILE THE CALL IS BEING MADE AKA LOADING
+            if (ConnectionState.active != null && !snapshot.hasData) {
+              return Center(child:
+                CircularProgressIndicator(
+                  strokeWidth: 10,
+                  )
+              );
+            }
+
+            // WHEN THE CALL IS DONE BUT HAPPENS TO HAVE AN ERROR
+            if (ConnectionState.done != null && snapshot.hasError) {
+              return Center(child: Text("ERROR"));
+            }
+            return snapshot.data!.elementAt(_selectedIndex);
+          },
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.blue,
@@ -100,10 +77,6 @@ class _ProjectNavigationScaffoldState extends State<ProjectNavigationScaffold> {
           BottomNavigationBarItem(
             icon: Icon(Icons.add_location_alt_rounded),
             label: 'Data',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.email),
-            label: 'Email',
           ),
         ],
         currentIndex: _selectedIndex,
