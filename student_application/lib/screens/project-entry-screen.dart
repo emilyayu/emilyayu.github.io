@@ -2,11 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:student_application/models/student.dart';
+
 // Create a Form widget.
 class ProjectEntryScreen extends StatefulWidget {
   static const routeName = '/entry';
+  List<Student> studentList;
   
-  const ProjectEntryScreen({super.key});
+  ProjectEntryScreen({required this.studentList});
 
   @override
   ProjectEntryScreenState createState() {

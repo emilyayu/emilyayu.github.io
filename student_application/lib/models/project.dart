@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class Project {
   int IDProjects;
@@ -16,16 +20,23 @@ class Project {
       required this.ProjectDescription,
       required this.ProjectImage,
       required this.AccessCode,
-      required this.ProjectInstructions
-      });
+      required this.ProjectInstructions});
 
   factory Project.fromJson(Map<String, dynamic> json) => Project(
-      IDProjects: json["IDUser"],
+      IDProjects: json["IDProjects"],
       ProjectName: json["ProjectName"],
       ProjectType: json["ProjectType"],
       ProjectDescription: json["ProjectDescription"],
       ProjectImage: json["ProjectImage"],
       AccessCode: json["AccessCode"],
-      ProjectInstructions: json["ProjectInstructions"]
-  );
+      ProjectInstructions: json["ProjectInstructions"]);
 }
+
+Project testProject = Project(
+    IDProjects: 12,
+    ProjectName: 'Test Project',
+    ProjectType: 'Test Type',
+    ProjectDescription: 'Description',
+    ProjectImage: 'testImage.com',
+    AccessCode: 1234,
+    ProjectInstructions: 'Test instructions');
