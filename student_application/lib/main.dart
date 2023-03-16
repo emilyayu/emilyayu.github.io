@@ -7,7 +7,7 @@ import 'package:student_application/project-tab-scaffold.dart';
 import 'screens/access-screen.dart';
 import 'screens/project-screen.dart';
 import 'screens/project-entry-screen.dart';
-import 'screens/project-email-screen.dart';
+import 'screens/error-screen.dart';
 
 
 void main() => runApp(const MyApp());
@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
       routes: {
         AccessScreen.routeName: (ctx) => AccessScreen(),
         ProjectNavigationScaffold.routeName: (ctx) => ProjectNavigationScaffold(),
+        ErrorScreen.routeName: (ctx) => ErrorScreen()
         // ProjectScreen.routeName: (ctx) => ProjectScreen(),
         // ProjectEntryScreen.routeName: (ctx) => ProjectEntryScreen(),
         // ProjectEmailScreen.routeName: (ctx) => ProjectEmailScreen()

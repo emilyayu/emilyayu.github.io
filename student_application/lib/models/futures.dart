@@ -15,20 +15,17 @@ Future<List<Widget>> getScreenList(accessCode) async {
   List<Widget> widgetOptions = [];
 
   try {
-    print('get screen list');
     Widget projectScreen = await getProjectScreen(accessCode);
     widgetOptions.add(projectScreen);
 
     Widget projectEntryScreen = await getProjectEntryScreen();
     widgetOptions.add(projectEntryScreen);
   } on AccessCodeException {
-    print('access exeption');
     rethrow;
   } on EmptyStudentException {
-    print('Empty student');
     rethrow;
   }
-  print('Before return');
+
   return widgetOptions;
 }
 
@@ -47,7 +44,7 @@ Future<Widget> getProjectScreen(String accessCode) async {
   // print(projectData);
   Project project = Project.fromJson(projectData);
 
-  print(project.ProjectName);
+  // print(project.ProjectName);
 
   return ProjectScreen(project: project);
 }
@@ -67,6 +64,6 @@ Future<Widget> getProjectEntryScreen() async {
   List<Student> classList = [];
   studentList.forEach((element) => classList.add(Student.fromJson(element)));
 
-  classList.forEach((element) => print(element.FirstName));
+  // classList.forEach((element) => print(element.FirstName));
   return ProjectEntryScreen(studentList: classList);
 }
