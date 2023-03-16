@@ -2,11 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:student_application/models/student.dart';
+
 // Create a Form widget.
 class ProjectEntryScreen extends StatefulWidget {
   static const routeName = '/entry';
-  
-  const ProjectEntryScreen({super.key});
+  List<Student> studentList;
+
+  ProjectEntryScreen({required this.studentList});
 
   @override
   ProjectEntryScreenState createState() {
@@ -25,6 +28,14 @@ class ProjectEntryScreenState extends State<ProjectEntryScreen> {
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    List<DropdownMenuItem<String>> dropdownList = [];
+    widget.studentList.forEach(
+      (element) => {
+        dropdownList.add(
+          DropdownMenuItem<String>(child: Text(element.FirstName + ' ' + element.LastName), value: element.IDUser.toString()),
+        )
+      }
+    );
     // Build a Form widget using the _formKey created above.
     return SafeArea(
       child: Center(
@@ -48,11 +59,7 @@ class ProjectEntryScreenState extends State<ProjectEntryScreen> {
                         labelText: 'Select a Student', 
                         border: OutlineInputBorder()
                       ),
-                      items:const [
-                        DropdownMenuItem<String>(child: Text('Amelia Walsh'), value: '1'),
-                        DropdownMenuItem<String>(child: Text('Emily Yu'), value: '2'),
-                        DropdownMenuItem<String>(child: Text('Tyler Sheen'), value: '3'),
-                      ],
+                      items: dropdownList,
                       onChanged: (_){}
                     ),
                   SizedBox(
