@@ -4,14 +4,7 @@ import '../models/project.dart';
 
 class ProjectScreen extends StatelessWidget {
   static const routeName = '/project';
-
-  // String ProjectName = "Mapping the blackberry";
-  // String ProjectType = "Image and Geolocation";
-  // String ProjectDescription = "An invasive species is an organism that is not "
-  //     "indigenous, or native to a particular area. To be considered invasive it "
-  //     "must harm property, the economy, or native plants and animals in the region. "
-  //     "As a community we can help stop the spread of these species!";
-
+  
   Project project;
   ProjectScreen({required this.project});
 

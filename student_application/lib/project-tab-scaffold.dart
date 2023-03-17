@@ -47,20 +47,42 @@ class _ProjectNavigationScaffoldState extends State<ProjectNavigationScaffold> {
           future: getScreenList(accessCode),
           builder:
               (BuildContext context, AsyncSnapshot<List<Widget>> snapshot) {
-
-              if(snapshot.connectionState == ConnectionState.done){
-                if(snapshot.hasError){
-                return Center(child: Text("Access error! Go back and enter a new access code."));
-                } else if(snapshot.hasData){
-                  return snapshot.data!.elementAt(_selectedIndex);
-                }
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError) {
+                print(snapshot.error);
+                return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error,
+                            size: 50,
+                            color: Colors.red,
+                          ),
+                          Text(
+                              "Invalid access code, go back and enter a new access code.",
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                        ],
+                      ),
+                    )
+                        
+                    );
+              } else if (snapshot.hasData) {
+                return snapshot.data!.elementAt(_selectedIndex);
               }
+            }
 
-              return Center(
-                  child: CircularProgressIndicator(
-                strokeWidth: 10,
-              )
-            );
+            return Center(
+                child: CircularProgressIndicator(
+              strokeWidth: 10,
+            ));
           },
         ),
       ),
