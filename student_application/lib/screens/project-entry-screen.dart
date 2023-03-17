@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
+
+import 'package:student_application/models/project.dart';
 import 'package:student_application/models/student.dart';
+import 'package:student_application/models/project-entry.dart';
+
+// Source: generate file from image asset
+// URL: https://stackoverflow.com/questions/55295593/how-to-convert-asset-image-to-file
 
 // Create a Form widget.
 class ProjectEntryScreen extends StatefulWidget {
   static const routeName = '/entry';
+  File EntryImage;
+  Project project;
   List<Student> studentList;
 
-  ProjectEntryScreen({required this.studentList});
+  ProjectEntryScreen(
+      {required this.studentList,
+      required this.project,
+      required this.EntryImage});
 
   @override
   ProjectEntryScreenState createState() {
@@ -18,14 +33,51 @@ class ProjectEntryScreen extends StatefulWidget {
 
 class ProjectEntryScreenState extends State<ProjectEntryScreen> {
   final _formKey = GlobalKey<FormState>();
-
-  String _IDUsers = '';
+  // File? EntryImage;
+  String _UsersFK = '';
   String _latitude = '';
   String _longitude = '';
+
+  Future pickImage() async {
+    try {
+      final EntryImage =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+
+      if (EntryImage == null) {
+        print('IMAGE ERROR');
+        return;
+      }
+
+      final EntryImageTemp = File(EntryImage.path);
+
+      setState(() {
+        widget.EntryImage = EntryImageTemp;
+      });
+    } on PlatformException {
+      print("Try Again");
+    }
+  }
 
   void _onSubmit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState?.save(); // Save form
+
+      // create entry with data
+      ProjectEntry projectEntry = ProjectEntry(
+          EntryImage: widget.EntryImage,
+          Latitude: _latitude,
+          Longitude: _latitude,
+          ProjectsFK: widget.project.IDProjects.toString(),
+          UsersFK: _UsersFK);
+
+      //post entry
+      try {
+        await postProjectEntry(projectEntry);
+        print('Post Successful');
+      } catch (e) {
+        print('Post Error');
+        print(e);
+      }
     }
   }
 
@@ -51,9 +103,11 @@ class ProjectEntryScreenState extends State<ProjectEntryScreen> {
                 child: ListView(
                   children: <Widget>[
                     ListTile(
-                      leading: Text(
+                      title: Text(widget.project.ProjectName,
+                          style: Theme.of(context).textTheme.displaySmall),
+                      subtitle: Text(
                         'What did you find?',
-                        style: Theme.of(context).textTheme.headlineMedium,
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     ),
                     SizedBox(
@@ -61,21 +115,47 @@ class ProjectEntryScreenState extends State<ProjectEntryScreen> {
                       height: 20,
                     ),
                     DropdownButtonFormField(
-                        decoration: InputDecoration(
-                            labelText: 'Select a Student',
-                            border: OutlineInputBorder()),
-                        items: dropdownList,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Select a student.';
-                          }
-                          return null;
-                        },
-                        onChanged: (value) {
-                          setState(() {
-                            _IDUsers = value.toString();
-                         });
-                        },
+                      decoration: InputDecoration(
+                          labelText: 'Select a Student',
+                          border: OutlineInputBorder()),
+                      items: dropdownList,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Select a student.';
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        setState(() {
+                          _UsersFK = value.toString();
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      width: 5,
+                      height: 5,
+                    ),
+                    AspectRatio(
+                        aspectRatio: 1, child: Image.file(widget.EntryImage)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            pickImage();
+                          },
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          )),
+                          child: Row(
+                            children: [
+                              Text('Upload Image '),
+                              Icon(Icons.add_a_photo),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(
                       width: 20,
@@ -96,10 +176,9 @@ class ProjectEntryScreenState extends State<ProjectEntryScreen> {
                               if (value == null || value.isEmpty) {
                                 return 'Enter latitude.';
                               }
-
-                              if (-90 <= double.parse(value) &&
-                                  double.parse(value) <= 90) {
-                                return 'Enter value between -90 and 90.';
+                              if (double.parse(value) < -90 ||
+                                  double.parse(value) > 90) {
+                                return 'Between [-90, 90]';
                               }
 
                               return null;
@@ -115,8 +194,8 @@ class ProjectEntryScreenState extends State<ProjectEntryScreen> {
                           ),
                         ),
                         SizedBox(
-                          width: 20,
-                          height: 20,
+                          width: 10,
+                          height: 10,
                         ),
                         Expanded(
                           child: TextFormField(
@@ -132,9 +211,9 @@ class ProjectEntryScreenState extends State<ProjectEntryScreen> {
                                 return 'Enter longitude.';
                               }
 
-                              if (-180 <= double.parse(value) &&
-                                  double.parse(value) <= 180) {
-                                return 'Enter value between -90 and 90.';
+                              if (double.parse(value) < -180 ||
+                                  double.parse(value) > 180) {
+                                return 'Between [-180, 180]';
                               }
 
                               return null;
@@ -155,30 +234,8 @@ class ProjectEntryScreenState extends State<ProjectEntryScreen> {
                       width: 20,
                       height: 20,
                     ),
-                    AspectRatio(
-                      aspectRatio: 1,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20))),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.cloud_upload,
-                              color: Colors.white,
-                              size: 150,
-                            ),
-                            ElevatedButton(
-                              child: Text("Upload Image"),
-                              onPressed: () {},
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    ElevatedButton(onPressed: _onSubmit, child: Text('Submit'))
+                    ElevatedButton(
+                        onPressed: _onSubmit, child: Text('Submit Data'))
                   ],
                 ),
               )),
