@@ -50,7 +50,6 @@ Future<void> postProjectEntry(ProjectEntry entry) async {
       ..fields['EntryLatLong'] = 'POINT(${entry.Latitude} ${entry.Longitude})'
       ..fields['ProjectsFK'] = entry.ProjectsFK
       ..fields['UsersFK'] = entry.UsersFK;
-    print('request sending ...');
     var response = await request.send();
 
     switch (response.statusCode) {

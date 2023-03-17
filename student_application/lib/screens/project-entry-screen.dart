@@ -13,6 +13,8 @@ import 'package:student_application/models/project-entry.dart';
 // Source: generate file from image asset
 // URL: https://stackoverflow.com/questions/55295593/how-to-convert-asset-image-to-file
 
+enum Status { success, error }
+
 // Create a Form widget.
 class ProjectEntryScreen extends StatefulWidget {
   static const routeName = '/entry';
@@ -33,7 +35,8 @@ class ProjectEntryScreen extends StatefulWidget {
 
 class ProjectEntryScreenState extends State<ProjectEntryScreen> {
   final _formKey = GlobalKey<FormState>();
-  // File? EntryImage;
+
+  var sendStatus;
   String _UsersFK = '';
   String _latitude = '';
   String _longitude = '';
@@ -44,7 +47,7 @@ class ProjectEntryScreenState extends State<ProjectEntryScreen> {
           await ImagePicker().pickImage(source: ImageSource.gallery);
 
       if (EntryImage == null) {
-        print('IMAGE ERROR');
+        print('Error selecting image.');
         return;
       }
 
@@ -54,7 +57,7 @@ class ProjectEntryScreenState extends State<ProjectEntryScreen> {
         widget.EntryImage = EntryImageTemp;
       });
     } on PlatformException {
-      print("Try Again");
+      print("Platform error selecting image.");
     }
   }
 
@@ -73,12 +76,16 @@ class ProjectEntryScreenState extends State<ProjectEntryScreen> {
       //post entry
       try {
         await postProjectEntry(projectEntry);
-        print('Post Successful');
+        setState(() {
+                  Navigator.popAndPushNamed(context, '/tab',
+            arguments: widget.project.AccessCode.toString());
+        });
       } catch (e) {
-        print('Post Error');
+        sendStatus = Status.error;
         print(e);
       }
     }
+    //reload??
   }
 
   @override
@@ -111,8 +118,26 @@ class ProjectEntryScreenState extends State<ProjectEntryScreen> {
                       ),
                     ),
                     SizedBox(
-                      width: 20,
-                      height: 20,
+                      width: 5,
+                      height: 5,
+                    ),
+                    sendStatus == Status.error
+                        ? Container(
+                          color: Colors.red[100],
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text('Error try again.',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 25
+                                  ),
+                            ),
+                          ),
+                        )
+                        : Text(''),
+                    SizedBox(
+                      width: 5,
+                      height: 5,
                     ),
                     DropdownButtonFormField(
                       decoration: InputDecoration(
